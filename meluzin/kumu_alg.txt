@@ -1,0 +1,38 @@
+kumulacia_pocet = 20;
+kumulovany_dz = [];
+kumulovany_Z0 = [];
+interval = [];
+interval_Z0 = [];
+bioz_n_kumu = zeros(18,length(bioz_Z0(1,:)));
+bioz_Z0_kumu = zeros(18,length(bioz_Z0(1,:)));
+for i = 1:celkovy_pocet_kanalov
+    bioz_n_kumu(i,1:r_loc_n(kumulacia_pocet)) = bioz_n(i,1:r_loc_n(kumulacia_pocet));
+    bioz_Z0_kumu(i,1:r_loc_n(kumulacia_pocet)) = bioz_Z0(i,1:r_loc_n(kumulacia_pocet));
+    for n=1:(pocet_R-1 - kumulacia_pocet)
+        kumulovany_dz = bioz_n(i,r_loc_n(n+kumulacia_pocet) : (r_loc_n(n+kumulacia_pocet+1)));
+        kumulovany_Z0 = bioz_Z0(i,r_loc_n(n+kumulacia_pocet) : (r_loc_n(n+kumulacia_pocet+1)));
+        L_prvy_interval = length(kumulovany_dz);
+        
+        for k = 0:kumulacia_pocet-1
+            interval = bioz_n(i,r_loc_n(n+k) : (r_loc_n(n+1+k)));
+            interval_Z0 = bioz_Z0(i,r_loc_n(n+k) : (r_loc_n(n+1+k)));
+            L_kumu_interval = length(interval);
+            if(L_kumu_interval > L_prvy_interval)
+               kumulovany_dz = kumulovany_dz + interval(:,1:L_prvy_interval);
+               kumulovany_Z0 = kumulovany_Z0 + interval_Z0(:,1:L_prvy_interval);
+            else
+                rozdiel = L_prvy_interval - L_kumu_interval;
+                nuly = zeros(1,rozdiel);
+               kumulovany_dz = kumulovany_dz + horzcat(interval,nuly);
+               kumulovany_Z0 = kumulovany_Z0 + horzcat(interval_Z0,nuly);               
+            end
+        end
+        
+        bioz_n_kumu(i,r_loc_n(n+kumulacia_pocet):(r_loc_n(n+1+20))) = kumulovany_dz/kumulacia_pocet;
+        bioz_Z0_kumu(i,(r_loc_n(n+kumulacia_pocet):(r_loc_n(n+1+20)))) = kumulovany_Z0/kumulacia_pocet;
+        kumulovany_dz = [];
+        kumulovany_Z0 = [];
+        interval = [];
+        interval_Z0 = [];
+    end
+end
